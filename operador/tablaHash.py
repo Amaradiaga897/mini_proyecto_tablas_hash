@@ -1,5 +1,5 @@
-from hash import calcularHash
-from operador import Operador
+from .hash import calcularHash
+from .operador import Operador
 class TablaHash:
 
     def __init__(self, M=13):
@@ -61,6 +61,28 @@ class TablaHash:
 
         print('================================\n')
 
+    # Función para comprobar el conflicto de Id's duplicados
+    # Esto significa mismo Id misma posición
+
+    def buscarIDConMismaPosicion(self, idOriginal):
+
+        posicionOriginal = calcularHash(idOriginal)
+
+        numero = 1
+
+        while True:
+
+            idPrueba = f'OP-10{numero}'
+
+            if idPrueba != idOriginal:
+
+                posicionPrueba = calcularHash(idPrueba)
+
+                if posicionPrueba == posicionOriginal:
+                    return idPrueba
+
+            numero += 1
+
     
 if __name__ == '__main__':
     tabla = TablaHash()
@@ -76,15 +98,21 @@ if __name__ == '__main__':
 
     tabla.mostrarTabla()
 
-    operador = tabla.buscar('OP-1001')
+    idOriginal = 'OP-1001'
 
-    if operador is not None:
+    idConflicto = tabla.buscarIDConMismaPosicion(idOriginal)
 
-        print('Operador encontrado:')
-        print('ID:', operador.id)
-        print('Nombre:', operador.nombre)
-        print('Correo:', operador.correo)
+    print('ID original:', idOriginal)
+    print('Posición:', calcularHash(idOriginal))
 
-    else:
+    print('ID conflicto:', idConflicto)
+    print('Posición:', calcularHash(idConflicto))
 
-        print('Operador no encontrado.')
+    operador2 = Operador(
+    idConflicto,
+    'Maria Lopez',
+    'maria@gmail.com',
+    'abc123'
+    )
+
+    tabla.insertar(operador2)
