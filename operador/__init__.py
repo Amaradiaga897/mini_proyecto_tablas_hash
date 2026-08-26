@@ -1,3 +1,3 @@
 from .operador import Operador
 from .tablaHash import TablaHash
-from .hash import calcularHash
+from .hash import calcularHash, convertirCadenaANumero

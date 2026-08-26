@@ -1,104 +1,175 @@
-from operador import Operador
-from operador import TablaHash
+
+from operador import Operador, TablaHash
 from infrastructure import ArchivoOperadores
-from datetime import datetime
-
-
-def main():
-
-    # 1. Crear la estructura que se pide M = 13
-
-    tabla = TablaHash(13)
-
-    archivo = ArchivoOperadores('operadores.txt')
-
-    # 2. Se cargaran los operadores que ya han sido guardados
-    archivo.cargar(tabla)
-
-    # 3. Aquí va el Login simulado
-
-    idOperador = "OP-1001"
-
-    operador = tabla.buscar(idOperador)
-
-
-    if operador is None:
-
-        print("El operador no existe.")
-
-        return
-
-    # Simulando que ingreso la contraseña correcta
-
-    print("\n================================")
-    print("       LOGIN EXITOSO")
-    print("================================")
-
-    print(f"ID:       {operador.id}")
-    print(f"Nombre:   {operador.nombre}")
-    print(f"Correo:   {operador.correo}")
-
-    # 4. Actualizar último acceso
-
-
-    operador.ultimoAcceso = datetime.now().strftime(
-        "%Y-%m-%d %H:%M:%S"
-    )
-
-    archivo.actualizar(operador)
-
-    print(f"Último acceso: {operador.ultimoAcceso}")
-
-    menuPrincipal(operador)
-
-def menuPrincipal(operador):
-
+from autenticacion import iniciarSesion
+ 
+from cola_prioridad import colaPrioridad
+from pila_visitantes import (
+    ingresarVehiculo,
+    sacarVehiculo,
+    ultimoElemento,
+    tamanioPila,
+    sacarEnMedio,
+)
+ 
+M = 13
+CAPACIDAD_CARGA = 6      # límite de la cola de prioridades (área de carga)
+CAPACIDAD_VISITANTES = 9  # límite de la pila de visitantes
+ 
+ 
+def menuAreaCarga(cola):
     while True:
-
+        print("\n-------- ÁREA DE CARGA Y DESCARGA (cola con prioridades) --------")
+        print("1. Ingresar camión")
+        print("2. Sacar camión (finalizó carga / se traslada)")
+        print("3. Ver frente de la cola")
+        print("4. Ver último de la cola")
+        print("5. Ver toda la cola")
+        print("6. Volver al menú principal")
+ 
+        opcion = input("Seleccione una opción: ").strip()
+ 
+        if opcion == "1":
+            nombre = input("Nombre/placa del camión: ").strip()
+            print("Prioridad -> 1: Alta (refrigerados/perecederos)")
+            print("             2: Media (carga pesada)")
+            print("             3: Baja (documentos/paquetería pequeña)")
+            try:
+                prioridad = int(input("Prioridad (1-3): ").strip())
+            except ValueError:
+                print("Prioridad inválida.")
+                continue
+            if prioridad not in (1, 2, 3):
+                print("Prioridad inválida.")
+                continue
+            cola.ingresar(nombre, prioridad)
+ 
+        elif opcion == "2":
+            cola.sacar()
+ 
+        elif opcion == "3":
+            print(f"Frente de la cola: {cola.obtenerFrente()}")
+ 
+        elif opcion == "4":
+            print(f"Último de la cola: {cola.obtenerUltimo()}")
+ 
+        elif opcion == "5":
+            cola.imprimirCola()
+ 
+        elif opcion == "6":
+            break
+ 
+        else:
+            print("Opción inválida.")
+ 
+ 
+def menuVisitantes(estacionamiento):
+    while True:
+        print("\n-------- ESTACIONAMIENTO DE VISITAS - Torre 1 (pila) --------")
+        print("1. Ingresar vehículo")
+        print("2. Sacar vehículo (retiro normal, tope de la pila)")
+        print("3. Ver último vehículo ingresado")
+        print("4. Ver tamaño del estacionamiento")
+        print("5. Ver todos los vehículos")
+        print("6. Reprogramar salida (mover un vehículo dentro de la pila)")
+        print("7. Volver al menú principal")
+ 
+        opcion = input("Seleccione una opción: ").strip()
+ 
+        if opcion == "1":
+            nombre = input("Nombre/placa del vehículo: ").strip()
+            if len(estacionamiento) >= CAPACIDAD_VISITANTES:
+                print(f"No se puede ingresar el vehículo {nombre}. El estacionamiento está lleno.")
+            else:
+                ingresarVehiculo(estacionamiento, nombre)
+ 
+        elif opcion == "2":
+            sacarVehiculo(estacionamiento)
+ 
+        elif opcion == "3":
+            print(f"Último vehículo: {ultimoElemento(estacionamiento)}")
+ 
+        elif opcion == "4":
+            tamanioPila(estacionamiento)
+ 
+        elif opcion == "5":
+            print(estacionamiento)
+ 
+        elif opcion == "6":
+            if not estacionamiento:
+                print("El estacionamiento está vacío.")
+                continue
+            print(f"Posiciones actuales (1 = fondo ... {len(estacionamiento)} = tope): {estacionamiento}")
+            try:
+                posicion = int(input("¿A qué posición desea mover el vehículo del tope?: ").strip())
+            except ValueError:
+                print("Posición inválida.")
+                continue
+            sacarEnMedio(estacionamiento, posicion)
+ 
+        elif opcion == "7":
+            break
+ 
+        else:
+            print("Opción inválida.")
+ 
+ 
+def menuPrincipal(operador, cola, estacionamiento):
+    while True:
         print("\n================================")
         print("     ESTACIONAMIENTO INTELIGENTE")
         print("================================")
-
-        print(f"Operador: {operador.nombre}")
+        print(f"Operador: {operador.nombre} ({operador.id})")
         print()
         print("1. Área de carga y descarga")
         print("2. Estacionamiento de visitantes")
         print("3. Información del operador")
-        print("4. Salir")
-
-        opcion = input("\nSeleccione una opción: ")
-
-
+        print("4. Cerrar sesión / Salir")
+ 
+        opcion = input("\nSeleccione una opción: ").strip()
+ 
         if opcion == "1":
-
-            print("\nÁrea de carga y descarga")
-            print("Aquí estará la Cola con Prioridad.")
-
-
+            menuAreaCarga(cola)
+ 
         elif opcion == "2":
-
-            print("\nEstacionamiento de visitantes")
-            print("Aquí estará la Pila de Visitantes.")
-
-
+            menuVisitantes(estacionamiento)
+ 
         elif opcion == "3":
-
             print("\n========== OPERADOR ==========")
-            print(f"ID:       {operador.id}")
-            print(f"Nombre:   {operador.nombre}")
-            print(f"Correo:   {operador.correo}")
+            print(f"ID:            {operador.id}")
+            print(f"Nombre:        {operador.nombre}")
+            print(f"Correo:        {operador.correo}")
             print(f"Último acceso: {operador.ultimoAcceso}")
-
-
+ 
         elif opcion == "4":
-
             print("\nSesión finalizada.")
             break
-
-
+ 
         else:
-
             print("\nOpción inválida.")
-
+ 
+ 
+def main():
+    tabla = TablaHash(M)
+    archivo = ArchivoOperadores('operadores.txt')
+    archivo.cargar(tabla)
+ 
+    operador = None
+    while operador is None:
+        operador = iniciarSesion(tabla, archivo)
+        if operador is None:
+            reintentar = input("\n¿Desea intentarlo de nuevo? (s/n): ").strip().lower()
+            if reintentar != 's':
+                print("Saliendo del sistema.")
+                return
+ 
+    # Estructuras de datos de los vehículos, vivas durante la sesión.
+    colaCarga = colaPrioridad(CAPACIDAD_CARGA)
+    estacionamientoVisitas = []
+ 
+    menuPrincipal(operador, colaCarga, estacionamientoVisitas)
+ 
+ 
 if __name__ == "__main__":
     main()
+ 
