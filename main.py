@@ -4,18 +4,10 @@ from infrastructure import ArchivoOperadores
 from autenticacion import iniciarSesion
  
 from cola_prioridad import colaPrioridad
-from pila_visitantes import (
-    ingresarVehiculo,
-    sacarVehiculo,
-    ultimoElemento,
-    tamanioPila,
-    sacarEnMedio,
-)
+from pila_visitantes import PilaVisitantes
  
 M = 13
-CAPACIDAD_CARGA = 6      # límite de la cola de prioridades (área de carga)
-CAPACIDAD_VISITANTES = 9  # límite de la pila de visitantes
- 
+CAPACIDAD_CARGA = 7      # límite de la cola de prioridades (área de carga)
  
 def menuAreaCarga(cola):
     while True:
@@ -78,34 +70,32 @@ def menuVisitantes(estacionamiento):
  
         if opcion == "1":
             nombre = input("Nombre/placa del vehículo: ").strip()
-            if len(estacionamiento) >= CAPACIDAD_VISITANTES:
-                print(f"No se puede ingresar el vehículo {nombre}. El estacionamiento está lleno.")
-            else:
-                ingresarVehiculo(estacionamiento, nombre)
+            estacionamiento.ingresarVehiculo(nombre)
  
         elif opcion == "2":
-            sacarVehiculo(estacionamiento)
+            estacionamiento.sacarVehiculo()
  
         elif opcion == "3":
-            print(f"Último vehículo: {ultimoElemento(estacionamiento)}")
+            print(f"Último vehículo: {estacionamiento.ultimoElemento()}")
  
         elif opcion == "4":
-            tamanioPila(estacionamiento)
+            estacionamiento.tamanioPila()
  
         elif opcion == "5":
-            print(estacionamiento)
+            estacionamiento.mostrarPila()
  
         elif opcion == "6":
-            if not estacionamiento:
+            if len(estacionamiento.pila) == 0:
                 print("El estacionamiento está vacío.")
                 continue
-            print(f"Posiciones actuales (1 = fondo ... {len(estacionamiento)} = tope): {estacionamiento}")
+            print(f"Posiciones actuales (1:fondo ... {estacionamiento.tamanioPila()}:tope):")
+            estacionamiento.mostrarPila()
             try:
-                posicion = int(input("¿A qué posición desea mover el vehículo del tope?: ").strip())
+                posicion = int(input("¿Qué vehículo desea reprogramar? (ingrese su posición): ").strip())
             except ValueError:
                 print("Posición inválida.")
                 continue
-            sacarEnMedio(estacionamiento, posicion)
+            estacionamiento.moverVehiculo(posicion)
  
         elif opcion == "7":
             break
@@ -165,7 +155,7 @@ def main():
  
     # Estructuras de datos de los vehículos, vivas durante la sesión.
     colaCarga = colaPrioridad(CAPACIDAD_CARGA)
-    estacionamientoVisitas = []
+    estacionamientoVisitas = PilaVisitantes()
  
     menuPrincipal(operador, colaCarga, estacionamientoVisitas)
  

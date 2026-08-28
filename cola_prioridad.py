@@ -1,7 +1,10 @@
+from datetime import datetime
+
 class Camion:
     def __init__(self, nombre, prioridad):
             self.nombre = nombre
             self.prioridad = prioridad
+            self.horaIngreso = datetime.now()
 
 class colaPrioridad:
     def __init__(self, capacity):
@@ -24,7 +27,7 @@ class colaPrioridad:
                     self.arr[self.size] = nuevo_nodo
             elif prioridad == 2 or prioridad == 1:
                 pos = 0
-                while pos < self.size and self.arr[pos].prioridad == True:
+                while pos < self.size and self.arr[pos].prioridad <= prioridad:
                     pos += 1
                 i = self.size
                 while i > pos:
@@ -62,8 +65,9 @@ class colaPrioridad:
                 print(self.arr[i - 1].nombre, self.arr[i - 1].prioridad)
 
 if __name__ == '__main__':
-    q = colaPrioridad(6)
+    q = colaPrioridad(7)
 
+"""
     q.ingresar('refrigerados/perecederos', 1)
     q.ingresar('documentos/paquetería pequeña', 3)
     q.ingresar('carga pesada', 2)
@@ -84,3 +88,4 @@ if __name__ == '__main__':
     print(f'frente: {q.obtenerFrente()}')
 
     print(f'ultimo: {q.obtenerUltimo()}')
+"""

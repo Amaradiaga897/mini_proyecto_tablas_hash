@@ -1,69 +1,65 @@
-#FUNCIONES DE PILA
-def pilaVacia(self):
-    if len(self) == 0:
-        print('No hay ningún visitante')
-    else:
-        print('Ya hay autos en el parqueo de visitantes')
-        
-def pilaLlena(self):
-    if len(self) == 9:
-        return True
+class PilaVisitantes:
+    capacity = 9
 
-def ingresarVehiculo(self, nombre):
-    if not pilaLlena(self):
-        self.append(nombre)
-        print(f'Se ingresó el vehiculo {nombre} en la posicion {len(self)}')
-    else:
-        print(f'No se puede ingresar el vehículo {nombre}. El estacionamiento está lleno.')
+    def __init__(self):
+        self.pila = []
 
-def sacarVehiculo(self):
-    if len(self) > 0:
-        print(f'Se retiró el vehiculo {ultimoElemento(self)} del estacionamiento')
-        self.pop()
-    else:
-        pilaVacia()
 
-def ultimoElemento(self):
-    if len(self) !=0:
-        return self[-1]
+    #sirve como un pilaVacia para decir si su tamaño es igual a 0.
+    #en caso de tener elementos, los imprime en pantalla
+    def mostrarPila(self):
+        if len(self.pila) == 0:
+            print("El estacionamiento de visitas está vacío.")
+            return
+        for i in range(len(self.pila), 0, -1):
+            print(f'{i}. {self.pila[i - 1]}')
 
-def tamanioPila(self):
-    print(f'El tamaño de la pila es {len(self)}')
-    
-def sacarEnMedio(self, posicion):
-    pilaAux = []
-    if len(self) > 0 and posicion <=len(self):
-        while len(self) != posicion:
-            ingresarVehiculo(pilaAux,self[-1])
-            sacarVehiculo(self)
-        sacarVehiculo(self)    
-        while len(pilaAux) !=0:
-            ingresarVehiculo(self,pilaAux[-1])
-            sacarVehiculo(pilaAux)    
 
-    
-estacionamiento = []    
-ingresarVehiculo(estacionamiento,'Hyundai')
-ingresarVehiculo(estacionamiento,'Mazda')
-ingresarVehiculo(estacionamiento,'Honda')
-ingresarVehiculo(estacionamiento,'Nissan')
-ingresarVehiculo(estacionamiento,'Mitsubishi')
-ingresarVehiculo(estacionamiento,'Toyota')
-ingresarVehiculo(estacionamiento,'Kia')
-ingresarVehiculo(estacionamiento,'Daewoo')
-ingresarVehiculo(estacionamiento,'Chrysler')
-tamanioPila(estacionamiento)
-print(estacionamiento)
+    # devuelve true si el tamaño de la pila es igual a 9
+    def pilaLlena(self):
+        return len(self.pila) == self.capacity
 
-sacarVehiculo(estacionamiento)
-sacarVehiculo(estacionamiento)
-sacarVehiculo(estacionamiento)
-print(estacionamiento)
-ingresarVehiculo(estacionamiento,'Mercedes-Benz')
-print(estacionamiento)
 
-sacarEnMedio(estacionamiento, 3)
-print(estacionamiento)
+    # ingresa un vehiculo a la pila solo si hay espacio
+    def ingresarVehiculo(self, nombre):
+        if not self.pilaLlena():
+            self.pila.append(nombre)
+            print(f'Se ingresó el vehiculo {nombre} en la posicion {len(self.pila)}')
+        else:
+            print(f'No se puede ingresar el vehículo {nombre}. El estacionamiento está lleno.')
 
-sacarEnMedio(estacionamiento, 2)
-print(estacionamiento)
+
+    #saca el vehiculo (tope) del estacionamiento
+    def sacarVehiculo(self):
+        if len(self.pila) > 0:
+            print(f'Se retiró el vehiculo {self.ultimoElemento()} del estacionamiento.')
+            self.pila.pop()
+        else:
+            self.mostrarPila()
+
+
+    # devuelve el tope de la pila
+    def ultimoElemento(self):
+        if len(self.pila) != 0:
+            return self.pila[-1]
+
+
+    # devuelve el tamaño de la pila
+    def tamanioPila(self):
+        return len(self.pila)
+
+
+    # mueve el vehiculo de la posicion ingresada al tope de la pila para su salida
+    # simula el mover carros fuera del estacionamiento y el reordenarlos para dejar el que nos interesa como el tope
+    def moverVehiculo(self, posicion):
+        if len(self.pila) == 0 or posicion < 1 or posicion > len(self.pila):
+            print('Posición inválida.')
+            return
+        pilaAux = []
+        while len(self.pila) != posicion:
+            pilaAux.append(self.pila.pop())
+        vehiculo = self.pila.pop()
+        while len(pilaAux) != 0:
+            self.pila.append(pilaAux.pop())
+        self.pila.append(vehiculo)
+        print(f'Se reprogramó la salida de {vehiculo}, ahora está en el tope.')
