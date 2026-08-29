@@ -66,7 +66,7 @@ class TablaHash:
 
     def buscarIDConMismaPosicion(self, idOriginal):
 
-        posicionOriginal = calcularHash(idOriginal)
+        posicionOriginal = calcularHash(idOriginal, self.M)
 
         numero = 1
 
@@ -76,7 +76,7 @@ class TablaHash:
 
             if idPrueba != idOriginal:
 
-                posicionPrueba = calcularHash(idPrueba)
+                posicionPrueba = calcularHash(idPrueba, self.M)
 
                 if posicionPrueba == posicionOriginal:
                     return idPrueba

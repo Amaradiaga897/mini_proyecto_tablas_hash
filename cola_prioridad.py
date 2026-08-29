@@ -19,6 +19,7 @@ class colaPrioridad:
         return self.size == self.capacity
 
     def ingresar(self, nombre, prioridad):
+        self.reasignarPrioridad()
         nuevo_nodo = Camion(nombre,prioridad)
         if self.estaLlena():
             print("El camión no puede entrar a la zona de carga en este momento. Intentelo más tarde")
@@ -35,57 +36,60 @@ class colaPrioridad:
                     i -= 1
                 self.arr[pos] = nuevo_nodo
             self.size += 1
+            
+    def reasignarPrioridad(self):
+        ahora = datetime.now()
+        i = 0
+        while i < self.size:
+            camion = self.arr[i]
+            tiempoEspera = (ahora - camion.horaIngreso).total_seconds()
+            if (tiempoEspera >= 300 and camion.prioridad == 3) or (tiempoEspera >= 180 and camion.prioridad == 2):
+                for j in range(i, self.size - 1):
+                    self.arr[j] = self.arr[j + 1]
+                self.size -= 1
+
+                camion.prioridad -= 1
+
+                pos = 0
+                while pos < self.size and self.arr[pos].prioridad <= camion.prioridad:
+                    pos += 1
+
+                for j in range(self.size, pos, -1):
+                    self.arr[j] = self.arr[j - 1]
+                self.arr[pos] = camion
+                self.size += 1
+                i=0
+            else:
+                i+=1
 
     def sacar(self):
         if self.estaVacia():
             print("¡No hay Camiones en cola!")
             return
         for i in range(1, self.size):
+            print(f'Se retiró el camión {self.arr[0].nombre} (Prioridad: {self.arr[0].prioridad}) de la cola de carga/descarga.')
             self.arr[i - 1] = self.arr[i]
         self.size -= 1
 
     def obtenerFrente(self):
+        self.reasignarPrioridad()
         if self.estaVacia():
             print("¡No hay Camiones en cola!")
             return -1
         return self.arr[0].nombre
         
     def obtenerUltimo(self):
+        self.reasignarPrioridad()
         if self.estaVacia():
            print("¡No hay Camiones en cola!")
            return -1
         return self.arr[self.size - 1].nombre
     
     def imprimirCola(self):
+        self.reasignarPrioridad()
         if self.estaVacia():
            print("¡No hay Camiones en cola!")
            return -1
         else: 
             for i in range(1, self.size+1):
-                print(self.arr[i - 1].nombre, self.arr[i - 1].prioridad)
-
-if __name__ == '__main__':
-    q = colaPrioridad(7)
-
-"""
-    q.ingresar('refrigerados/perecederos', 1)
-    q.ingresar('documentos/paquetería pequeña', 3)
-    q.ingresar('carga pesada', 2)
-    q.ingresar('documentos/paquetería pequeña', 3)
-    q.ingresar('refrigerados/perecederos', 1)
-    q.ingresar('carga pesada', 2)
-    q.ingresar('carga pesada', 2)
-    q.imprimirCola()
-    
-    print(f'frente: {q.obtenerFrente()}')
-    
-    q.imprimirCola()
-
-    q.sacar()
-    
-    q.imprimirCola()
-
-    print(f'frente: {q.obtenerFrente()}')
-
-    print(f'ultimo: {q.obtenerUltimo()}')
-"""
+                print(f'{i}. {self.arr[i - 1].nombre} (Prioridad: {self.arr[i - 1].prioridad})')

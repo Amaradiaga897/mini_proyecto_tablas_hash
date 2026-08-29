@@ -50,20 +50,22 @@ def menuAreaCarga(cola):
  
         elif opcion == "6":
             break
- 
+
         else:
             print("Opción inválida.")
- 
- 
+
+        input("\nPresione Enter para continuar...")
+
+
 def menuVisitantes(estacionamiento):
     while True:
         print("\n-------- ESTACIONAMIENTO DE VISITAS - Torre 1 (pila) --------")
         print("1. Ingresar vehículo")
-        print("2. Sacar vehículo (retiro normal, tope de la pila)")
+        print("2. Sacar vehículo (ultimo ingresado)")
         print("3. Ver último vehículo ingresado")
-        print("4. Ver tamaño del estacionamiento")
+        print("4. Ver número de vehículos estacionados")
         print("5. Ver todos los vehículos")
-        print("6. Reprogramar salida (mover un vehículo dentro de la pila)")
+        print("6. Reprogramar salida (mover un vehículo al tope de la pila)")
         print("7. Volver al menú principal")
  
         opcion = input("Seleccione una opción: ").strip()
@@ -79,7 +81,7 @@ def menuVisitantes(estacionamiento):
             print(f"Último vehículo: {estacionamiento.ultimoElemento()}")
  
         elif opcion == "4":
-            estacionamiento.tamanioPila()
+            print(f'El número de carros en el estacionamiento actualmente es: {estacionamiento.tamanioPila()}')
  
         elif opcion == "5":
             estacionamiento.mostrarPila()
@@ -99,11 +101,13 @@ def menuVisitantes(estacionamiento):
  
         elif opcion == "7":
             break
- 
+
         else:
             print("Opción inválida.")
- 
- 
+
+        input("\nPresione Enter para continuar...")
+
+
 def menuPrincipal(operador, cola, estacionamiento):
     while True:
         print("\n================================")
@@ -130,13 +134,15 @@ def menuPrincipal(operador, cola, estacionamiento):
             print(f"Nombre:        {operador.nombre}")
             print(f"Correo:        {operador.correo}")
             print(f"Último acceso: {operador.ultimoAcceso}")
- 
+            input("\nPresione Enter para continuar...")
+
         elif opcion == "4":
             print("\nSesión finalizada.")
             break
- 
+
         else:
             print("\nOpción inválida.")
+            input("\nPresione Enter para continuar...")
  
  
 def main():
