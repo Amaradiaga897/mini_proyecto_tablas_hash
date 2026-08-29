@@ -12,12 +12,15 @@ class colaPrioridad:
         self.arr = [0] * capacity
         self.size = 0
 
+    # devuelve true si el tamaño de la cola es igual a 0
     def estaVacia(self):
         return self.size == 0
 
+    # devuelve true si el tamaño de la pila es igual a capacity. Esto se pasa como parametro en main
     def estaLlena(self):
         return self.size == self.capacity
 
+    # ingresa un camion a un posicion de la cola dependiendo de su prioridad →(P3, P2, P1)→ siempre y cuando haya espacio
     def ingresar(self, nombre, prioridad):
         self.reasignarPrioridad()
         nuevo_nodo = Camion(nombre,prioridad)
@@ -36,7 +39,8 @@ class colaPrioridad:
                     i -= 1
                 self.arr[pos] = nuevo_nodo
             self.size += 1
-            
+    
+    # cambia la prioridad de los camiones P2 o P3 despues de pasado cierto tiempo desde su ingreso        
     def reasignarPrioridad(self):
         ahora = datetime.now()
         i = 0
@@ -62,7 +66,9 @@ class colaPrioridad:
             else:
                 i+=1
 
+    # Retira el camion al frente de la cola
     def sacar(self):
+        self.reasignarPrioridad()
         if self.estaVacia():
             print("¡No hay Camiones en cola!")
             return
@@ -71,6 +77,7 @@ class colaPrioridad:
             self.arr[i - 1] = self.arr[i]
         self.size -= 1
 
+    # devuelve el camion al frente de la cola
     def obtenerFrente(self):
         self.reasignarPrioridad()
         if self.estaVacia():
@@ -78,6 +85,7 @@ class colaPrioridad:
             return -1
         return self.arr[0].nombre
         
+    # devuelve el camion en la ultima posicion de la cola    
     def obtenerUltimo(self):
         self.reasignarPrioridad()
         if self.estaVacia():
@@ -85,6 +93,8 @@ class colaPrioridad:
            return -1
         return self.arr[self.size - 1].nombre
     
+    
+    # Imprime la cola completa mostrando la posicion de cada camion, su nombre y su prioridad
     def imprimirCola(self):
         self.reasignarPrioridad()
         if self.estaVacia():
